@@ -1,25 +1,22 @@
 <?php 
 session_start();
 include("config.php");
-if(isset($_POST['submit']))
-{
-    if($_SESSION['user'] == 'cus')
-    {
-        if($_POST['quantity'] > 0)
-        {
-        $sql = "INSERT INTO cart VALUES ('', ".$_POST['id'].",".$_POST['quantity'].",".$_SESSION['id'].");";
-        $conn->query($sql);
-        echo '<script type="text/javascript">alert("Added to cart");</script>';
+
+if (isset($_POST['submit'])) {
+    if ($_SESSION['user'] == 'cus') {
+        if ($_POST['quantity'] > 0) {
+            $sql = "INSERT INTO cart VALUES ('', " . $_POST['id'] . "," . $_POST['quantity'] . "," . $_SESSION['id'] . ");";
+            mysqli_query($conn, $sql);
+            echo '<script type="text/javascript">alert("Added to cart");</script>';
+        } else {
+            echo '<script type="text/javascript">alert("Quantity should be greater than 0");</script>';
         }
-        else echo '<script type="text/javascript">alert("Quantity should be greater than 0");</script>';
+    } else if ($_SESSION['user'] == 'res') {
+        echo '<script type="text/javascript">alert("Restaurants cannot order");</script>';
+    } else {
+        header("Location: login_usr.php?login=false");
+        die(); 
     }
-    else if($_SESSION['user'] == 'res')
-            echo '<script type="text/javascript">alert("Restaurents cannot order");</script>';
-    else 
-        {
-            header("Location: login_usr.php?login=false");
-            die(); 
-        }
 }
 
 ?>
@@ -30,8 +27,7 @@ if(isset($_POST['submit']))
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Menu</title>
     <style>
-
-         body {
+        body {
             background-image: url('images/background.jpg');
             background-size: cover;
             margin: 0;
@@ -107,53 +103,58 @@ if(isset($_POST['submit']))
         .back-link:hover {
             color: #0056b3;
         }
-
     </style>
 </head>
 <body>
-<?php if(isset($_SESSION['user']) &&  $_SESSION['user']== 'cus')
-        echo "<a style='font-size:20 px;', href='cus_home.php'><< Back</a>";
-      else if(isset($_SESSION['user']) &&  $_SESSION['user']== 'res')
-        echo "<a style='font-size:20px;', href='res_home.php'><< Back</a>";
-      else
-      echo "<a style='font-size:20px;', href='index.php'><< Back</a>";
-        
+<?php
+if (isset($_SESSION['user'])) {
+    if ($_SESSION['user'] == 'cus') {
+        echo "<a style='font-size:20px;' href='cus_home.php'><< Back</a>";
+    } else if ($_SESSION['user'] == 'res') {
+        echo "<a style='font-size:20px;' href='res_home.php'><< Back</a>";
+    } else {
+        echo "<a style='font-size:20px;' href='index.php'><< Back</a>";
+    }
+}
 ?>
 <div class="menu">
     <?php 
     include("config.php");
-    if(isset($_SESSION['user']) &&  $_SESSION['user']== 'cus'){
-        $pref = $conn->query("SELECT pref FROM customers WHERE id =".$_SESSION['id'])->fetch_assoc();
-        $sql = "SELECT * FROM food ORDER BY pref=".$pref['pref']." DESC";}
-    else
-        $sql = "SELECT * FROM food";
 
-    $result = $conn->query($sql);
-    if ($result->num_rows > 0) 
-    {
-        // output data of each row
-        while($row = $result->fetch_assoc()) 
-        { //Display all food items
-            $res = $conn->query("SELECT * FROM restaurents WHERE id =".$row['res_id'])->fetch_assoc();
-            $pref = $row['pref']?"Non-veg":"Veg";
+    if (isset($_SESSION['user']) && $_SESSION['user'] == 'cus') {
+        $pref_result = mysqli_query($conn, "SELECT pref FROM customers WHERE id =" . $_SESSION['id']);
+        $pref = mysqli_fetch_assoc($pref_result);
+        $sql = "SELECT * FROM food ORDER BY pref=" . $pref['pref'] . " DESC";
+    } else {
+        $sql = "SELECT * FROM food";
+    }
+
+    $result = mysqli_query($conn, $sql);
+    if (mysqli_num_rows($result) > 0) {
+        while ($row = mysqli_fetch_assoc($result)) {
+            $res_result = mysqli_query($conn, "SELECT * FROM restaurents WHERE id =" . $row['res_id']);
+            $res = mysqli_fetch_assoc($res_result);
+            $pref = $row['pref'] ? "Non-veg" : "Veg";
+
             echo "<div class='food'>";
-            echo "<img width = '250' height = '250' style='vertical-align:top;' src=".$row['image']."> 
-                 <h2>Name: " . $row["name"]. "<h2><h2>Price: " . $row["price"]." rs</h2> <h2>Food type: ".$pref."<h2>".
-                 "<h2>Restaurent: " . $res["name"]. "<h2><h2>Location: " . $res["location"]." ".
-                 "<form action='menu.php' method='POST' >".
-                 "<input type='number'  step = '1' id='price' name = 'quantity' placeholder='Enter quantity' >".
-                 "<input type='hidden' name = 'id' value ='".$row['id']."' >".
-                 "<button type='submit' id='button' name='submit'>Order</button></form>";
+            echo "<img width='250' height='250' style='vertical-align:top;' src=" . $row['image'] . "> 
+                  <h2>Name: " . $row["name"] . "</h2>
+                  <h2>Price: " . $row["price"] . " rs</h2>
+                  <h2>Food type: " . $pref . "</h2>
+                  <h2>Restaurant: " . $res["name"] . "</h2>
+                  <h2>Location: " . $res["location"] . "</h2>
+                  <form action='menu.php' method='POST'>
+                  <input type='number' step='1' id='price' name='quantity' placeholder='Enter quantity'>
+                  <input type='hidden' name='id' value='" . $row['id'] . "'>
+                  <button type='submit' id='button' name='submit'>Order</button></form>";
             echo "</div>";
         }
-    } 
-    else 
+    } else {
         echo "NO FOOD";
-    
-    $conn->close();
+    }
+
+    mysqli_close($conn);
     ?>
-  </div>
+</div>
 </body>
 </html>
-  
-    
