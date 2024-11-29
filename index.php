@@ -65,11 +65,11 @@ if(isset($_GET['loggedout'])){
             color: #333;
         }
     </style>
-    <title>FoodShala</title>
+    <title>GrubGrab</title>
 </head>
 <body>
     <nav>
-        <h1>FOODSHALA</h1>
+        <h1>GrubGrab</h1>
         <ul class="nav-buttons">
             <li><a href="menu.php">Menu</a></li>
             <li><a href="login_usr.php">Login (Customer)</a></li>

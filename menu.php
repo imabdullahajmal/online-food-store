@@ -106,8 +106,6 @@ if (isset($_POST['submit'])) {
     </style>
 </head>
 <body>
-
-<!-- Back button -->
 <?php
 if (isset($_SESSION['user'])) {
     if ($_SESSION['user'] == 'cus') {

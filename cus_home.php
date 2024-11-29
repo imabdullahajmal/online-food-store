@@ -164,7 +164,7 @@ mysqli_close($conn);
     <nav>
         <div class="container">
             <div class="logo">
-                <a href="index.php">FOODSHALA</a>
+                <a href="index.php">GrubGrab</a>
             </div>
             <ul>
                 <li><a href="menu.php"><i class="fas fa-utensils"></i>Menu</a></li>
