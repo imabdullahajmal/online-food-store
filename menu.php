@@ -106,17 +106,20 @@ if (isset($_POST['submit'])) {
     </style>
 </head>
 <body>
+
+<!-- Back button -->
 <?php
 if (isset($_SESSION['user'])) {
     if ($_SESSION['user'] == 'cus') {
-        echo "<a style='font-size:20px;' href='cus_home.php'><< Back</a>";
+        echo "<a class='back-link' href='cus_home.php'><< Back</a>";
     } else if ($_SESSION['user'] == 'res') {
-        echo "<a style='font-size:20px;' href='res_home.php'><< Back</a>";
+        echo "<a class='back-link' href='res_home.php'><< Back</a>";
     } else {
-        echo "<a style='font-size:20px;' href='index.php'><< Back</a>";
+        echo "<a class='back-link' href='index.php'><< Back</a>";
     }
 }
 ?>
+
 <div class="menu">
     <?php 
     include("config.php");
