@@ -16,6 +16,47 @@ include("redirect_to_home.php");
             padding: 0;
         }
 
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background-color: #333;
+        }
+
+        nav h1 {
+            font-family: "Comic Sans MS", cursive, sans-serif;
+            font-style: oblique;
+            font-weight: bold;
+            font-size: 3em;
+            color: white;
+            margin: 0;
+        }
+
+        .nav-buttons {
+            display: flex;
+        }
+
+        .nav-buttons li {
+            list-style: none;
+            margin-left: 20px;
+        }
+
+        .nav-buttons li a {
+            color: white;
+            text-align: center;
+            padding: 15px;
+            text-decoration: none;
+            border: 1px solid #bbb;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .nav-buttons li a:hover {
+            background-color: #ddd;
+            color: #333;
+        }
+
         h3 {
             color: #444;
             margin-left: 20px;
@@ -116,7 +157,6 @@ include("redirect_to_home.php");
         }
 
         .back-link {
-            position: absolute;
             top: 20px;
             left: 20px;
             font-size: 1.1em;
@@ -130,9 +170,21 @@ include("redirect_to_home.php");
     </style>
 </head>
 <body>
-    <a href="index.php">
+    <nav>
+        <h1>GrubGrab</h1>
+        <ul class="nav-buttons">
+            <li><a href="menu.php">Menu</a></li>
+            <li><a href="login_usr.php">Login (Customer)</a></li>
+            <li><a href="login_res.php">Login (Restaurant)</a></li>
+            <li><a href="register_usr.php">Register (Customer)</a></li>
+            <li><a href="register_res.php">Register (Restaurant)</a></li>
+        </ul>
+    </nav>
+
+    <a href="index.php" class="back-link">
         <h3><i class="fas fa-arrow-left"></i> Back</h3>
     </a>
+
     <div class="form-container">
         <div>
             <h2>Restaurant Login</h2>
