@@ -88,32 +88,22 @@ include("config.php");
     <div class="menu">
         <?php 
             include("config.php");
-
-            // Fetch orders for the logged-in user
             $sql = "SELECT * FROM orders WHERE user_id = " . $_SESSION['id'] . " ORDER BY time DESC;";
             $result = mysqli_query($conn, $sql);
 
             if (mysqli_num_rows($result) > 0) {
                 while ($row = mysqli_fetch_assoc($result)) {
-                    // Get the food details
                     $foodQuery = "SELECT * FROM food WHERE id = " . $row['food_id'];
                     $foodResult = mysqli_query($conn, $foodQuery);
                     $food = mysqli_fetch_assoc($foodResult);
-
-                    // Get the restaurant details
                     $resQuery = "SELECT * FROM restaurents WHERE id = " . $food['res_id'];
                     $resResult = mysqli_query($conn, $resQuery);
                     $res = mysqli_fetch_assoc($resResult);
 
-                    // Display preference
                     $pref = $food['pref'] ? "Non-veg" : "Veg";
-
-                    // Format the date and time
                     $dt = explode(" ", $row['time']);
                     $date = $dt[0];
                     $time = $dt[1];
-
-                    // Display each order
                     echo "<div class='food'>";
                     echo "<img src='" . $food['image'] . "' alt='Food Image'>";
                     echo "<h2>Name: <span>" . $food["name"] . "</span></h2>";
