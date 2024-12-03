@@ -68,10 +68,6 @@ include("redirect_to_home.php");
             transition: border-color 0.3s ease;
         }
 
-        input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focus {
-            border-color: #4CAF50;
-            outline: none;
-        }
 
         button[type="submit"] {
             background-color: #800303;
