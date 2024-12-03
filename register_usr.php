@@ -1,6 +1,34 @@
 <?php 
 session_start();
 include("redirect_to_home.php");
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    include("config.php");
+    $name = $_POST['name'];
+    $email = $_POST['email'];
+    $phone_no = $_POST['phone_no'];
+    $password = $_POST['password'];
+    $pref = ($_POST['pref'] == "veg") ? 0 : 1;
+
+    $sql_check = "SELECT * FROM customers WHERE email = '$email'";
+    $result_chk = mysqli_query($conn, $sql_check);
+
+    if (mysqli_num_rows($result_chk) > 0) {
+        echo '<script>alert("User account with that email already exists!");</script>';
+    } else if (strlen($phone_no) != 10) {
+        echo '<script>alert("Phone number should be of 10 digits.");</script>';
+    } else {
+        $hashedpass = hash('sha256', $password . $email);
+        $sql = "INSERT INTO customers (name, email, password, pref, phone_no) 
+                VALUES ('$name', '$email', '$hashedpass', $pref, '$phone_no')";
+        mysqli_query($conn, $sql);
+        mysqli_close($conn);
+        header("Location: index.php?reg_success=yes");
+        exit();
+    }
+
+    mysqli_close($conn);
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -18,7 +46,6 @@ include("redirect_to_home.php");
             margin: 0;
             padding: 0;
         }
-
         nav {
             display: flex;
             justify-content: space-between;
@@ -26,7 +53,6 @@ include("redirect_to_home.php");
             padding: 20px;
             background-color: #333;
         }
-
         nav h1 {
             font-family: "Comic Sans MS", cursive, sans-serif;
             font-style: oblique;
@@ -35,16 +61,13 @@ include("redirect_to_home.php");
             color: white;
             margin: 0;
         }
-
         .nav-buttons {
             display: flex;
         }
-
         .nav-buttons li {
             list-style: none;
             margin-left: 20px;
         }
-
         .nav-buttons li a {
             color: white;
             text-align: center;
@@ -54,12 +77,10 @@ include("redirect_to_home.php");
             border-radius: 5px;
             transition: background-color 0.3s ease;
         }
-
         .nav-buttons li a:hover {
             background-color: #ddd;
             color: #333;
         }
-
         h3 {
             color: #fff;
             margin-left: 20px;
@@ -70,11 +91,9 @@ include("redirect_to_home.php");
             text-decoration: none;
             cursor: pointer;
         }
-
         h3:hover {
             text-decoration: underline;
         }
-
         h2 {
             color: darkslategray;
             text-decoration: underline;
@@ -82,7 +101,6 @@ include("redirect_to_home.php");
             font-size: 2em;
             font-weight: bold;
         }
-
         .form-container {
             background-color: rgba(255, 255, 255, 0.8);
             max-width: 400px;
@@ -91,14 +109,12 @@ include("redirect_to_home.php");
             border-radius: 8px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
         }
-
         .form-container label {
             font-size: 1.1em;
             color: #333;
             margin-bottom: 8px;
             display: block;
         }
-
         .form-container input, .form-container fieldset {
             width: 100%;
             padding: 12px;
@@ -109,12 +125,10 @@ include("redirect_to_home.php");
             font-size: 1em;
             background-color: #f7f7f7;
         }
-
         .form-container input[type="radio"] {
             width: auto;
             margin-right: 10px;
         }
-
         .form-container button {
             background-color: #800303;
             color: white;
@@ -126,11 +140,9 @@ include("redirect_to_home.php");
             cursor: pointer;
             transition: background-color 0.3s ease;
         }
-
         .form-container button:hover {
             background-color: #660303;
         }
-
         .form-container a {
             display: block;
             text-align: center;
@@ -139,16 +151,13 @@ include("redirect_to_home.php");
             text-decoration: none;
             margin-top: 20px;
         }
-
         .form-container a:hover {
             text-decoration: underline;
         }
-
         @media (max-width: 480px) {
             h2 {
                 font-size: 1.6em;
             }
-
             .form-container {
                 padding: 15px;
                 width: 90%;
@@ -168,58 +177,18 @@ include("redirect_to_home.php");
             <li><a href="register_res.php">Register (Restaurant)</a></li>
         </ul>
     </nav>
-
     <a href="index.php"><h3><i class="fas fa-arrow-left"></i> Back</h3></a>
-    
     <div class="form-container">
         <h2>Register Customer</h2>
-        
-        <?php
-        include("config.php");
-        if (isset($_POST['submit'])) {
-            $name = $_POST['name'];
-            $email = $_POST['email'];
-            $phone_no = $_POST['phone_no'];
-            $password = $_POST['password'];
-            $pref = NULL;
-            if ($_POST['pref'] == "veg")
-                $pref = 0;
-            else
-                $pref = 1;
-
-            $sql_check = "SELECT * FROM customers WHERE email LIKE '$email'";
-            $result_chk = mysqli_query($conn, $sql_check);
-            
-            if (mysqli_num_rows($result_chk) > 0) {
-                echo '<script type="text/javascript">alert("User account with that email already exists!");</script>';
-            } else if (strlen($phone_no) != 10) {
-                echo '<script type="text/javascript">alert("Phone number should be of 10 digits.");</script>';
-            } else {
-                $hashedpass = hash('sha256', $password . $email);
-                $sql = "INSERT INTO customers (name, email, password, preference, phone_no) 
-                        VALUES ('$name', '$email', '$hashedpass', $pref, '$phone_no')";
-                mysqli_query($conn, $sql);
-                header("Location: index.php?reg_success=yes");
-                die();
-            }
-        }
-
-        mysqli_close($conn);
-        ?>
-
         <form action="register_usr.php" method="POST">
             <label for="name">Name</label>
             <input type="text" id="name" name="name" placeholder="Enter your Name" required>
-            
             <label for="InputEmail">Email Address</label>
             <input type="email" id="InputEmail" name="email" placeholder="Enter your Email" required>
-            
             <label for="phone_no">Phone Number</label>
             <input type="text" id="phone_no" name="phone_no" placeholder="Phone Number" required>
-            
             <label for="InputPassword">Password</label>
             <input type="password" id="InputPassword" name="password" placeholder="Enter password" required>
-            
             <fieldset>
                 <label>Preferred Diet</label>
                 <input type="radio" id="veg" name="pref" value="veg" checked>
@@ -227,10 +196,8 @@ include("redirect_to_home.php");
                 <input type="radio" id="non_veg" name="pref" value="non_veg">
                 <label for="non_veg">Non-veg</label>
             </fieldset>
-            
             <button type="submit" id="button" name="submit">Register</button>
         </form>
-
         <a href="login_usr.php">Already have an account? Login here</a>
     </div>
 </body>

@@ -1,4 +1,4 @@
-<?php
+<?php 
 session_start();
 include("config.php");
 
@@ -18,6 +18,7 @@ if (isset($_POST['submit'])) {
         die(); 
     }
 }
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -27,60 +28,17 @@ if (isset($_POST['submit'])) {
     <title>Menu</title>
     <style>
         body {
-            background-color: #f5f5f5;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-image: url('images/background.jpg');
+            background-size: cover;
             margin: 0;
-            padding: 0;
+            font-family: Arial, sans-serif;
         }
-
-        nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px;
-            background-color: #333;
-        }
-
-        nav h1 {
-            font-family: "Comic Sans MS", cursive, sans-serif;
-            font-style: oblique;
-            font-weight: bold;
-            font-size: 3em;
-            color: white;
-            margin: 0;
-        }
-
-        .nav-buttons {
-            display: flex;
-        }
-
-        .nav-buttons li {
-            list-style: none;
-            margin-left: 20px;
-        }
-
-        .nav-buttons li a {
-            color: white;
-            text-align: center;
-            padding: 15px;
-            text-decoration: none;
-            border: 1px solid #bbb;
-            border-radius: 5px;
-            transition: background-color 0.3s ease;
-        }
-
-        .nav-buttons li a:hover {
-            background-color: #ddd;
-            color: #333;
-        }
-
         .menu {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
             padding: 20px;
         }
-
         .food {
             background-color: white;
             border-radius: 10px;
@@ -91,33 +49,27 @@ if (isset($_POST['submit'])) {
             overflow: hidden;
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
-
         .food:hover {
             transform: translateY(-5px);
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
         }
-
         .food img {
             width: 100%;
             height: 200px;
             object-fit: cover;
         }
-
         .food h2 {
             font-size: 1.2em;
             margin: 10px 0;
             color: #333;
         }
-
         .food p {
             font-size: 1em;
             color: #555;
         }
-
         .food form {
             margin: 15px 0;
         }
-
         .food input[type="number"] {
             width: 80%;
             padding: 8px;
@@ -126,7 +78,6 @@ if (isset($_POST['submit'])) {
             border-radius: 5px;
             text-align: center;
         }
-
         .food button {
             background-color: #007BFF;
             color: white;
@@ -137,11 +88,9 @@ if (isset($_POST['submit'])) {
             font-size: 1em;
             transition: background-color 0.2s ease;
         }
-
         .food button:hover {
             background-color: #0056b3;
         }
-
         .back-link {
             display: inline-block;
             margin: 20px;
@@ -151,74 +100,62 @@ if (isset($_POST['submit'])) {
             font-weight: bold;
             transition: color 0.2s ease;
         }
-
         .back-link:hover {
             color: #0056b3;
         }
     </style>
 </head>
 <body>
-    <nav>
-        <h1>GrubGrab</h1>
-        <ul class="nav-buttons">
-            <li><a href="menu.php">Menu</a></li>
-            <li><a href="login_usr.php">Login (Customer)</a></li>
-            <li><a href="login_res.php">Login (Restaurant)</a></li>
-            <li><a href="register_usr.php">Register (Customer)</a></li>
-            <li><a href="register_res.php">Register (Restaurant)</a></li>
-        </ul>
-    </nav>
-
-    <?php
-    if (isset($_SESSION['user'])) {
-        if ($_SESSION['user'] == 'cus') {
-            echo "<a class='back-link' href='cus_home.php'><< Back</a>";
-        } else if ($_SESSION['user'] == 'res') {
-            echo "<a class='back-link' href='res_home.php'><< Back</a>";
-        } else {
-            echo "<a class='back-link' href='index.php'><< Back</a>";
-        }
+<?php
+if (isset($_SESSION['user'])) {
+    if ($_SESSION['user'] == 'cus') {
+        echo "<a class='back-link' href='cus_home.php'><< Back</a>";
+    } else if ($_SESSION['user'] == 'res') {
+        echo "<a class='back-link' href='res_home.php'><< Back</a>";
+    } else {
+        echo "<a class='back-link' href='index.php'><< Back</a>";
     }
+}
+?>
+
+<div class="menu">
+    <?php 
+    include("config.php");
+
+    if (isset($_SESSION['user']) && $_SESSION['user'] == 'cus') {
+        $pref_result = mysqli_query($conn, "SELECT pref FROM customers WHERE id =" . $_SESSION['id']);
+        $pref = mysqli_fetch_assoc($pref_result);
+        $sql = "SELECT * FROM food ORDER BY pref=" . $pref['pref'] . " DESC";
+    } else {
+        $sql = "SELECT * FROM food";
+    }
+
+    $result = mysqli_query($conn, $sql);
+    if (mysqli_num_rows($result) > 0) {
+        while ($row = mysqli_fetch_assoc($result)) {
+            $res_result = mysqli_query($conn, "SELECT * FROM restaurents WHERE id =" . $row['res_id']);
+            $res = mysqli_fetch_assoc($res_result);
+            $pref = $row['pref'] ? "Non-veg" : "Veg";
+
+            echo "<div class='food'>";
+            echo "<img width='250' height='250' style='vertical-align:top;' src=" . $row['image'] . "> 
+                  <h2>Name: " . $row["name"] . "</h2>
+                  <h2>Price: " . $row["price"] . " rs</h2>
+                  <h2>Food type: " . $pref . "</h2>
+                  <h2>Restaurant: " . $res["name"] . "</h2>
+                  <h2>Location: " . $res["location"] . "</h2>
+                  <form action='menu.php' method='POST'>
+                  <input type='number' step='1' id='price' name='quantity' placeholder='Enter quantity'>
+                  <input type='hidden' name='id' value='" . $row['id'] . "'>
+                  <button type='submit' id='button' name='submit'>Order</button></form>";
+            echo "</div>";
+        }
+    } else {
+        echo "NO FOOD";
+    }
+
+    mysqli_close($conn);
     ?>
-
-    <div class="menu">
-        <?php 
-        include("config.php");
-
-        if (isset($_SESSION['user']) && $_SESSION['user'] == 'cus') {
-            $pref_result = mysqli_query($conn, "SELECT pref FROM customers WHERE id =" . $_SESSION['id']);
-            $pref = mysqli_fetch_assoc($pref_result);
-            $sql = "SELECT * FROM food ORDER BY pref=" . $pref['pref'] . " DESC";
-        } else {
-            $sql = "SELECT * FROM food";
-        }
-
-        $result = mysqli_query($conn, $sql);
-        if (mysqli_num_rows($result) > 0) {
-            while ($row = mysqli_fetch_assoc($result)) {
-                $res_result = mysqli_query($conn, "SELECT * FROM restaurents WHERE id =" . $row['res_id']);
-                $res = mysqli_fetch_assoc($res_result);
-                $pref = $row['pref'] ? "Non-veg" : "Veg";
-
-                echo "<div class='food'>";
-                echo "<img width='250' height='250' style='vertical-align:top;' src=" . $row['image'] . "> 
-                      <h2>Name: " . $row["name"] . "</h2>
-                      <h2>Price: " . $row["price"] . " rs</h2>
-                      <h2>Food type: " . $pref . "</h2>
-                      <h2>Restaurant: " . $res["name"] . "</h2>
-                      <h2>Location: " . $res["location"] . "</h2>
-                      <form action='menu.php' method='POST'>
-                      <input type='number' step='1' id='price' name='quantity' placeholder='Enter quantity'>
-                      <input type='hidden' name='id' value='" . $row['id'] . "'>
-                      <button type='submit' id='button' name='submit'>Order</button></form>";
-                echo "</div>";
-            }
-        } else {
-            echo "NO FOOD";
-        }
-
-        mysqli_close($conn);
-        ?>
-    </div>
+</div>
 </body>
 </html>

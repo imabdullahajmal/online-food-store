@@ -1,9 +1,34 @@
-<?php 
+<?php
 session_start();
 include("redirect_to_home.php");
+include("config.php");
+
+if (isset($_POST['submit'])) {
+    $name = $_POST['name'];
+    $email = $_POST['email'];
+    $password = $_POST['password'];
+    $location = $_POST['location'];
+
+    $sql_check = "SELECT * FROM restaurents WHERE email LIKE '$email'";
+    $result_chk = mysqli_query($conn, $sql_check);
+
+    if (mysqli_num_rows($result_chk) > 0) {
+        echo '<script type="text/javascript">alert("Restaurant account with that email already exists!");</script>';
+    } else {
+        $hashedpass = hash('sha256', $password . $email);
+        $sql = "INSERT INTO restaurents (name, email, password, location) VALUES ('$name', '$email', '$hashedpass', '$location')";
+        mysqli_query($conn, $sql);
+        header("Location: index.php?reg_success=yes");
+        exit();
+    }
+}
+
+mysqli_close($conn);
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -89,7 +114,7 @@ include("redirect_to_home.php");
             border: 1px solid #ddd;
         }
 
-        form > * {
+        form>* {
             margin: 15px 0;
             width: 100%;
         }
@@ -99,7 +124,9 @@ include("redirect_to_home.php");
             color: #333;
         }
 
-        input[type="text"], input[type="email"], input[type="password"] {
+        input[type="text"],
+        input[type="email"],
+        input[type="password"] {
             padding: 12px;
             border: 1px solid #ccc;
             border-radius: 6px;
@@ -153,6 +180,7 @@ include("redirect_to_home.php");
     </style>
     <title>Restaurant Registration</title>
 </head>
+
 <body>
     <nav>
         <h1>GrubGrab</h1>
@@ -164,23 +192,26 @@ include("redirect_to_home.php");
             <li><a href="register_res.php">Register (Restaurant)</a></li>
         </ul>
     </nav>
-    
-    <a href="index.php"><h3><i class="fas fa-arrow-left"></i> Back</h3></a>
+
+    <a href="index.php">
+        <h3><i class="fas fa-arrow-left"></i> Back</h3>
+    </a>
+
     <h2>Register Restaurant</h2>
     <div class="form-container">
         <form action="register_res.php" method="POST">
             <label for="name">Restaurant Name</label>
             <input type="text" id="name" name="name" placeholder="Enter restaurant Name" required>
-            
+
             <label for="InputEmail">Email Address</label>
             <input type="email" id="InputEmail" name="email" placeholder="Enter your Email" required>
-            
+
             <label for="InputPassword">Password</label>
             <input type="password" id="InputPassword" name="password" placeholder="Enter password" required>
-            
+
             <label for="location">Location</label>
             <input type="text" id="location" name="location" placeholder="Enter restaurant location" required>
-            
+
             <button type="submit" id="button" name="submit">Register</button>
 
             <div class="form-footer">
@@ -189,4 +220,5 @@ include("redirect_to_home.php");
         </form>
     </div>
 </body>
+
 </html>
