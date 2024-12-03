@@ -7,87 +7,100 @@ include("redirect_to_home.php");
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/3.18.1/build/cssnormalize/cssnormalize-min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
         body {
-            font-family: 'Arial', sans-serif;
-            background-image: url('images/background.jpg');
-            background-size: cover;
-            background-position: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
             margin: 0;
             padding: 0;
         }
-        
+
         h3 {
             color: #4CAF50;
             margin-left: 20px;
+            margin-top: 15px;
             font-size: 1.2em;
-            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
         }
-        
+
         h2 {
+            text-decoration: underline;
             color: darkslategray;
-            margin-left: 20px;
+            margin: 20px 0;
             font-size: 2em;
-            font-weight: bold;
+            text-align: center;
         }
 
         .form-container {
-            background-color: rgba(255, 255, 255, 0.8);
-            max-width: 400px;
-            margin: 50px auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             padding: 20px;
+        }
+
+        form {
+            background-color: #fff;
+            padding: 30px;
             border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-        }
-
-        .form-container label {
-            font-size: 1.1em;
-            color: #333;
-            margin-bottom: 8px;
-            display: block;
-        }
-
-        .form-container input {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             width: 100%;
+            max-width: 400px;
+            border: 1px solid #ddd;
+        }
+
+        form > * {
+            margin: 15px 0;
+            width: 100%;
+        }
+
+        label {
+            font-weight: bold;
+            color: #333;
+        }
+
+        input[type="text"], input[type="email"], input[type="password"] {
             padding: 12px;
-            margin: 8px 0 16px 0;
             border: 1px solid #ccc;
-            border-radius: 4px;
+            border-radius: 6px;
+            font-size: 1.1em;
+            width: 100%;
             box-sizing: border-box;
-            font-size: 1em;
+            transition: border-color 0.3s ease;
         }
 
-        .form-container input[type="text"], .form-container input[type="email"], .form-container input[type="password"] {
-            background-color: #f7f7f7;
+        input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focus {
+            border-color: #4CAF50;
+            outline: none;
         }
 
-        .form-container button {
-            background-color: #4CAF50;
+        button[type="submit"] {
+            background-color: #800303;
             color: white;
             padding: 15px;
-            width: 100%;
             font-size: 1.2em;
             border: none;
-            border-radius: 4px;
+            border-radius: 6px;
             cursor: pointer;
             transition: background-color 0.3s ease;
+            width: 100%;
         }
 
-        .form-container button:hover {
-            background-color: #45a049;
+        button[type="submit"]:hover {
+            background-color: #660303;
         }
 
-        .form-container a {
-            display: block;
+        .form-footer {
             text-align: center;
-            color: #4CAF50;
-            font-size: 1.1em;
-            text-decoration: none;
-            margin-top: 20px;
+            margin-top: 15px;
         }
 
-        .form-container a:hover {
+        .form-footer a {
+            text-decoration: none;
+            color: #660303;
+            font-size: 1.1em;
+        }
+
+        .form-footer a:hover {
             text-decoration: underline;
         }
 
@@ -96,7 +109,7 @@ include("redirect_to_home.php");
                 font-size: 1.6em;
             }
 
-            .form-container {
+            form {
                 padding: 15px;
                 width: 90%;
             }
@@ -105,36 +118,9 @@ include("redirect_to_home.php");
     <title>Restaurant Registration</title>
 </head>
 <body>
-    <a href="index.php"><h3>&lt;&lt; Back</h3></a>
-    
+    <a href="index.php"><h3><i class="fas fa-arrow-left"></i> Back</h3></a>
+    <h2>Register Restaurant</h2>
     <div class="form-container">
-        <h2>Register Restaurant</h2>
-        
-        <?php
-        include("config.php");
-        if (isset($_POST['submit'])) {
-            $name = $_POST['name'];
-            $email = $_POST['email'];
-            $password = $_POST['password'];
-            $location = $_POST['location'];
-
-            $sql_check = "SELECT * FROM restaurents WHERE email LIKE '$email'";
-            $result_chk = mysqli_query($conn, $sql_check);
-            
-            if (mysqli_num_rows($result_chk) > 0) {
-                echo '<script type="text/javascript">alert("Restaurant account with that email already exists!");</script>';
-            } else {
-                $hashedpass = hash('sha256', $password . $email);
-                $sql = "INSERT INTO restaurents (name, email, password, location) VALUES ('$name', '$email', '$hashedpass', '$location')";
-                mysqli_query($conn, $sql);
-                header("Location: index.php?reg_success=yes");
-                die();
-            }
-        }
-
-        mysqli_close($conn);
-        ?>
-
         <form action="register_res.php" method="POST">
             <label for="name">Restaurant Name</label>
             <input type="text" id="name" name="name" placeholder="Enter restaurant Name" required>
@@ -149,9 +135,11 @@ include("redirect_to_home.php");
             <input type="text" id="location" name="location" placeholder="Enter restaurant location" required>
             
             <button type="submit" id="button" name="submit">Register</button>
+
+            <div class="form-footer">
+                <a href="index.php">Already have an account? Login here</a>
+            </div>
         </form>
-        
-        <a href="index.php">Already have an account? Login here</a>
     </div>
 </body>
 </html>

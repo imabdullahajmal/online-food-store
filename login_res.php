@@ -7,6 +7,7 @@ include("redirect_to_home.php");
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <title>Restaurant Login</title>
     <style>
         body {
             background-color: #f5f5f5;
@@ -113,73 +114,90 @@ include("redirect_to_home.php");
         .form-footer a:hover {
             text-decoration: underline;
         }
+
+        .back-link {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 1.1em;
+            color: #800303;
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            color: #660303;
+        }
     </style>
-    <title>Restaurant Login</title>
 </head>
 <body>
-    <a href="index.php"><h3><i class="fas fa-arrow-left"></i> Back</h3></a>
-    <h2>Restaurant Login</h2>
+    <a href="index.php">
+        <h3><i class="fas fa-arrow-left"></i> Back</h3>
+    </a>
     <div class="form-container">
-        <form action="login_res.php" method="POST">
-            <?php
-            include("config.php");
+        <div>
+            <h2>Restaurant Login</h2>
+            <form action="login_res.php" method="POST">
+                <?php
+                include("config.php");
 
-            if(isset($_POST['submit'])) {
-                $email = $_POST['email'];
-                $pass = $_POST['password'];
-                $password = hash('sha256', $pass . $email);
+                if (isset($_POST['submit'])) {
+                    $email = $_POST['email'];
+                    $pass = $_POST['password'];
+                    $password = hash('sha256', $pass . $email);
 
-                $email_chk = "SELECT * FROM restaurents WHERE email LIKE '$email' ";
-                $result_email_chk = mysqli_query($conn, $email_chk);
+                    $email_chk = "SELECT * FROM restaurents WHERE email LIKE '$email'";
+                    $result_email_chk = mysqli_query($conn, $email_chk);
 
-                $pass_chk = "SELECT * FROM restaurents WHERE email LIKE '$email' AND password LIKE '$password'";
-                $result_pass_chk = mysqli_query($conn, $pass_chk);
+                    $pass_chk = "SELECT * FROM restaurents WHERE email LIKE '$email' AND password LIKE '$password'";
+                    $result_pass_chk = mysqli_query($conn, $pass_chk);
 
-                if(mysqli_num_rows($result_email_chk) > 0) {
-                    if(mysqli_num_rows($result_pass_chk) > 0) {
-                        if(isset($_SESSION['id'])) {
-                            header("Location: index.php?loggedin=true");
-                            die();
-                        } else {
-                            if(isset($_POST['rememberme'])) {
-                                setcookie("email_res", $email, time() + 3600); // 1 hr
-                                setcookie("password_res", $pass, time() + 3600); // 1 hr
+                    if (mysqli_num_rows($result_email_chk) > 0) {
+                        if (mysqli_num_rows($result_pass_chk) > 0) {
+                            if (isset($_SESSION['id'])) {
+                                header("Location: index.php?loggedin=true");
+                                die();
+                            } else {
+                                if (isset($_POST['rememberme'])) {
+                                    setcookie("email_res", $email, time() + 3600); // 1 hr
+                                    setcookie("password_res", $pass, time() + 3600); // 1 hr
+                                }
+                                $get_id = "SELECT id FROM restaurents WHERE email LIKE '$email' AND password LIKE '$password'";
+                                $id_ = mysqli_query($conn, $get_id);
+                                $id = mysqli_fetch_assoc($id_);
+                                $_SESSION['id'] = $id["id"];
+                                $_SESSION['user'] = 'res';
+                                header('Location: res_home.php');
+                                die();
                             }
-                            $get_id = "SELECT id FROM restaurents WHERE email LIKE '$email' AND password LIKE '$password'";
-                            $id_ = mysqli_query($conn, $get_id);
-                            $id = mysqli_fetch_assoc($id_);
-                            $_SESSION['id'] = $id["id"];
-                            $_SESSION['user'] = 'res';
-                            header('Location: res_home.php');
-                            die();
+                        } else {
+                            echo '<script>alert("Password Incorrect");</script>';
                         }
                     } else {
-                        echo '<script>alert("Password Incorrect");</script>';
+                        echo '<script>alert("Email not Found");</script>';
                     }
-                } else {
-                    echo '<script>alert("Email not Found");</script>';
                 }
-            }
-            mysqli_close($conn);
-            ?>
+                mysqli_close($conn);
+                ?>
 
-            <label for="InputEmail">Email address</label>
-            <input type="email" id="InputEmail" name="email" placeholder="Enter your Email" value="<?php echo isset($_COOKIE['email_res']) ? $_COOKIE['email_res'] : ''; ?>" required>
+                <label for="InputEmail">Email address</label>
+                <input type="email" id="InputEmail" name="email" placeholder="Enter your Email" 
+                    value="<?php echo isset($_COOKIE['email_res']) ? $_COOKIE['email_res'] : ''; ?>" required>
 
-            <label for="InputPassword">Password</label>
-            <input type="password" id="InputPassword" name="password" placeholder="Enter password" value="<?php echo isset($_COOKIE['password_res']) ? $_COOKIE['password_res'] : ''; ?>" required>
+                <label for="InputPassword">Password</label>
+                <input type="password" id="InputPassword" name="password" placeholder="Enter password" 
+                    value="<?php echo isset($_COOKIE['password_res']) ? $_COOKIE['password_res'] : ''; ?>" required>
 
-            <div class="remember-me">
-                <input type="checkbox" id="rememberme" name="rememberme">
-                <label for="rememberme">Remember me</label>
-            </div>
+                <div class="remember-me">
+                    <input type="checkbox" id="rememberme" name="rememberme">
+                    <label for="rememberme">Remember me?</label>
+                </div>
 
-            <button type="submit" id="button" name="submit">Login</button>
-
-            <div class="form-footer">
-                <p>Don't have an account? <a href="signup_res.php">Sign Up</a></p>
-            </div>
-        </form>
+                <button type="submit" name="submit">Login</button>
+                <div class="form-footer">
+                    <a href="signup_res.php">Don't have an account? Register here</a>
+                </div>
+            </form>
+        </div>
     </div>
 </body>
 </html>
