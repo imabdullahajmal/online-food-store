@@ -92,7 +92,7 @@ mysqli_close($conn);
 <body>
 
     <nav>
-        <h1>FOODSHALA</h1>
+        <h1>GRUBGRAB</h1>
         <ul class="nav-buttons">
             <li><a href="menu.php">Menu</a></li>
             <li><a href="add_food.php">Add Menu Item</a></li>
@@ -104,7 +104,7 @@ mysqli_close($conn);
 
     <div class="container">
         <h3>Welcome <?php echo htmlspecialchars($name); ?></h3>
-        <h1>FOODSHALA</h1>
+        <h1>GRUBGRAB</h1>
     </div>
 
 </body>

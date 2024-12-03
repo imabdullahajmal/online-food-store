@@ -1,13 +1,57 @@
 <?php
-session_start();
-if (isset($_GET['login']))
-    echo '<script type="text/javascript">alert("You need to login first");</script>';
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 
-include("redirect_to_home.php");
+if (isset($_GET['login'])) {
+    echo '<script type="text/javascript">alert("You need to login first");</script>';
+    exit();
+}
+
+include("config.php");
+
+if (isset($_POST['submit'])) {
+    $email = $_POST['email'];
+    $pass = $_POST['password'];
+    $password = hash('sha256', $pass . $email);
+
+    $email_chk = "SELECT * FROM customers WHERE email LIKE '$email'";
+    $result_email_chk = mysqli_query($conn, $email_chk);
+
+    $pass_chk = "SELECT * FROM `customers` WHERE `email` LIKE '$email' AND `password` LIKE '$password'";
+    $result_pass_chk = mysqli_query($conn, $pass_chk);
+
+    if (mysqli_num_rows($result_email_chk) > 0) {
+        if (mysqli_num_rows($result_pass_chk) > 0) {
+            if (isset($_SESSION['id'])) {
+                header("Location: index.php?loggedin=true");
+                exit();
+            } else {
+                if (isset($_POST['rememberme'])) {
+                    setcookie("email", $email, time() + 3600);
+                    setcookie("password", $pass, time() + 3600);
+                }
+                $get_id = "SELECT id FROM `customers` WHERE `email` LIKE '$email' AND `password` LIKE '$password'";
+                $id_result = mysqli_query($conn, $get_id);
+                $id = mysqli_fetch_assoc($id_result);
+                $_SESSION['id'] = $id["id"];
+                $_SESSION['user'] = 'cus';
+                header('Location: cus_home.php');
+                exit();
+            }
+        } else {
+            echo '<script type="text/javascript">alert("Password Incorrect");</script>';
+        }
+    } else {
+        echo '<script type="text/javascript">alert("Email not Found");</script>';
+    }
+
+    mysqli_close($conn);
+}
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -19,6 +63,47 @@ include("redirect_to_home.php");
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 0;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background-color: #333;
+        }
+
+        nav h1 {
+            font-family: "Comic Sans MS", cursive, sans-serif;
+            font-style: oblique;
+            font-weight: bold;
+            font-size: 3em;
+            color: white;
+            margin: 0;
+        }
+
+        .nav-buttons {
+            display: flex;
+        }
+
+        .nav-buttons li {
+            list-style: none;
+            margin-left: 20px;
+        }
+
+        .nav-buttons li a {
+            color: white;
+            text-align: center;
+            padding: 15px;
+            text-decoration: none;
+            border: 1px solid #bbb;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .nav-buttons li a:hover {
+            background-color: #ddd;
+            color: #333;
         }
 
         h3 {
@@ -123,7 +208,6 @@ include("redirect_to_home.php");
         }
 
         .back-link {
-            position: absolute;
             top: 20px;
             left: 20px;
             font-size: 1.1em;
@@ -136,59 +220,26 @@ include("redirect_to_home.php");
         }
     </style>
 </head>
-
 <body>
-    <a href="index.php">
+    <nav>
+        <h1>GrubGrab</h1>
+        <ul class="nav-buttons">
+            <li><a href="menu.php">Menu</a></li>
+            <li><a href="login_usr.php">Login (Customer)</a></li>
+            <li><a href="login_res.php">Login (Restaurant)</a></li>
+            <li><a href="register_usr.php">Register (Customer)</a></li>
+            <li><a href="register_res.php">Register (Restaurant)</a></li>
+        </ul>
+    </nav>
+
+    <a href="index.php" class="back-link">
         <h3><i class="fas fa-arrow-left"></i> Back</h3>
     </a>
+
     <div class="form-container">
         <div>
             <h2>Customer Login</h2>
             <form action="login_usr.php" method="POST">
-                <?php
-                include("config.php");
-
-                if (isset($_POST['submit'])) {
-                    $email = $_POST['email'];
-                    $pass = $_POST['password'];
-                    $password = hash('sha256', $pass . $email);
-
-                    $email_chk = "SELECT * FROM customers WHERE email LIKE '$email'";
-                    $result_email_chk = mysqli_query($conn, $email_chk);
-
-                    $pass_chk = "SELECT * FROM `customers` WHERE `email` LIKE '$email' AND `password` LIKE '$password'";
-                    $result_pass_chk = mysqli_query($conn, $pass_chk);
-
-                    if (mysqli_num_rows($result_email_chk) > 0) {
-                        if (mysqli_num_rows($result_pass_chk) > 0) {
-                            if (isset($_SESSION['id'])) {
-                                header("Location: index.php?loggedin=true");
-                                die();
-                            } else {
-                                if (isset($_POST['rememberme'])) {
-                                    setcookie("email", $email, time() + 3600);
-                                    setcookie("password", $pass, time() + 3600);
-                                }
-                                $get_id = "SELECT id FROM `customers` WHERE `email` LIKE '$email' AND `password` LIKE '$password'";
-                                $id_result = mysqli_query($conn, $get_id);
-                                $id = mysqli_fetch_assoc($id_result);
-                                session_start();
-                                $_SESSION['id'] = $id["id"];
-                                $_SESSION['user'] = 'cus';
-                                header('Location: cus_home.php');
-                                die();
-                            }
-                        } else {
-                            echo '<script type="text/javascript">alert("Password Incorrect");</script>';
-                        }
-                    } else {
-                        echo '<script type="text/javascript">alert("Email not Found");</script>';
-                    }
-
-                    mysqli_close($conn);
-                }
-                ?>
-
                 <label for="InputEmail">Email address</label>
                 <input type="email" id="InputEmail" name="email" placeholder="Enter your Email"
                     value="<?php echo isset($_COOKIE['email']) ? $_COOKIE['email'] : ''; ?>" required>
@@ -207,9 +258,7 @@ include("redirect_to_home.php");
                     <a href="register_usr.php">Don't have an account? Register here</a>
                 </div>
             </form>
-
         </div>
     </div>
 </body>
-
 </html>
