@@ -29,7 +29,7 @@ mysqli_close($conn);
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
         body {
-            background-image: url('images/background.jpg');
+            background-image: url('images/bg-scaled.jpg');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;

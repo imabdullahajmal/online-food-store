@@ -22,6 +22,8 @@ if(isset($_GET['loggedout'])){
             background-color: white;
             margin: 0;
             font-family: Arial, sans-serif;
+            background-image: url("images/bg-scaled.jpg");
+            background-position: center;
         }
 
         nav {

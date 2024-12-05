@@ -22,7 +22,7 @@ mysqli_close($conn);
     <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/3.18.1/build/cssnormalize/cssnormalize-min.css">
     <style>
         body {
-            background-color: white;
+            background-image: url("images/bg-scaled.jpg");
             margin: 0;
             font-family: Arial, sans-serif;
         }

@@ -18,7 +18,6 @@ if (isset($_POST['submit'])) {
         die(); 
     }
 }
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -106,6 +105,7 @@ if (isset($_POST['submit'])) {
     </style>
 </head>
 <body>
+
 <?php
 if (isset($_SESSION['user'])) {
     if ($_SESSION['user'] == 'cus') {

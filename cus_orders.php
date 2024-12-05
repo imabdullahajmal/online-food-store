@@ -14,7 +14,7 @@ include("config.php");
     <title>My Orders</title>
     <style>
         body {
-            background-image: url('images/background.jpg');
+            background-image: url('images/bg-scaled.jpg');
             background-size: cover;
             background-position: center;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;

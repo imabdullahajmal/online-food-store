@@ -43,7 +43,7 @@ if (isset($_GET['order'])) {
     body {
         margin: 0;
         font-family: 'Arial', sans-serif;
-        background-image: url('images/background.jpg');
+        background-image: url('images/bg-scaled.jpg');
         background-size: cover;
         background-attachment: fixed;
         color: white;
