@@ -16,10 +16,13 @@ include("config.php");
         body {
             background-image: url('images/bg-scaled.jpg');
             background-size: cover;
+            background-repeat: no-repeat;
             background-position: center;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             color: white;
+            width: 100vw;
+            height: 100vh;
         }
 
         h3 {
